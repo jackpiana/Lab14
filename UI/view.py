@@ -25,6 +25,7 @@ class View(ft.UserControl):
         self._page.controls.append(self._title)
 
         self._ddStore = ft.Dropdown(label="Store")
+        self._controller.fill_dropdown()
         self._txtIntK = ft.TextField(label="Numero giorni massimo K")
         self._btnCreaGrafo = ft.ElevatedButton(text="Crea Grafo", on_click=self._controller.handleCreaGrafo)
         cont = ft.Container(self._ddStore, width=250, alignment=ft.alignment.top_left)
@@ -54,6 +55,37 @@ class View(ft.UserControl):
         self._page.controls.append(self.txt_result)
         self._page.update()
 
+    def create_alert(self, message):
+        """
+        manda a schermo un avviso per l'utente
+        :param message: messaggio da lanciare
+        """
+        dlg = ft.AlertDialog(title=ft.Text(message))
+        self._page.dialog = dlg
+        dlg.open = True
+        self._page.update()
+
+    """
+    LOADING BAR
+    chiama funzione lunga di cui si desidera mostrare il caricamento tra show/remove
+    """
+    def show_loading_bar(self):
+        # progress bar
+        progress_loading = ft.ProgressBar(width=400,
+                                          height=20,
+                                          color="blue",
+                                          bgcolor="#eeeeee")
+
+        self.row_loadingBar = ft.Row([progress_loading],
+                      alignment=ft.MainAxisAlignment.CENTER)
+
+        self._page.controls.append(self.row_loadingBar)
+        self._page.update()
+
+    def remove_loading_bar(self):
+        self._page.controls.remove(self.row_loadingBar)
+        self._page.update()
+
 
     @property
     def controller(self):
@@ -66,5 +98,5 @@ class View(ft.UserControl):
     def set_controller(self, controller):
         self._controller = controller
 
-    def update_page(self):
+    def update(self):
         self._page.update()
