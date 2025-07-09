@@ -1,3 +1,5 @@
+from random import random
+
 import networkx as nx
 
 from database.DAO import DAO
@@ -20,7 +22,6 @@ class Model:
         nodesMap = DAO.getter_mapNodes(storeId)
         nodes = nodesMap.values()
         self.grafo.add_nodes_from(nodes)
-        print(self.grafo)
 
 
         edgesId = DAO.getter_edges(storeId, k)
@@ -28,16 +29,21 @@ class Model:
             if edge[0] in nodesMap.keys() and edge[1] in nodesMap.keys():
                 self.grafo.add_edge(nodesMap[edge[0]], nodesMap[edge[1]], weight= int(edge[2]))
 
+        """for e in list(self.grafo.edges(data= True)):
+            print(self.grafo[e[0]][e[1]]['weight'])
+            print(e)"""
+
         print(self.grafo)
 
     def longest_path(self, node):
+        self.bestScore = 0
+        self.longestPath = []
         self.ricorsione([node])
         return self.bestScore, self.longestPath
 
     def ricorsione(self, parziale):
         rimanenti = self.rimanenti(parziale)
         if not rimanenti:
-            print(parziale)
             self.score(parziale)
         else:
             rimanenti = rimanenti.copy()
@@ -61,24 +67,23 @@ class Model:
     def score(self, parziale):
         score = len(parziale)
         if score > self.bestScore:
-            print(score)
             self.bestScore = score
             self.longestPath = parziale.copy()
 
 
     def best_path(self, node):
-        self.pesoAttuale = 1000000
+        self.pesoAttuale = 100000000
         self.bestScore2 = 0
         self.bestPath = []
 
         self.ricorsione2([node])
+
         return self.bestScore2, self.bestPath
 
 
     def ricorsione2(self, parziale):
         rimanenti = self.rimanenti2(parziale)
-        if not rimanenti:
-            print(parziale)
+        if rimanenti == []:
             self.score2(parziale)
         else:
             rimanenti = rimanenti.copy()
@@ -91,12 +96,15 @@ class Model:
     def rimanenti2(self, parziale):
         rimanenti = []
         ns = parziale[-1]
-        vicini = self.grafo.neighbors(ns)
+        vicini = list(self.grafo.neighbors(ns))
+        print(vicini, "qui")
         if len(parziale) > 1:
-            self.pesoAttuale = self.grafo.edges[parziale[-2], ns]['weight']
+            self.pesoAttuale = self.grafo[ns][parziale[-2]]['weight']
+            print(self.pesoAttuale)
 
         for vicino in vicini:
             pesoArco = self.grafo[ns][vicino]['weight']
+            print(pesoArco)
             if pesoArco < self.pesoAttuale:
                 rimanenti.append(vicino)
         return rimanenti
@@ -116,4 +124,6 @@ class Model:
 if __name__ == "__main__":
     m = Model()
     m.build_graph(2, 5)
+    nodes = list(m.grafo.nodes)
+    m.best_path(nodes[2])
 
