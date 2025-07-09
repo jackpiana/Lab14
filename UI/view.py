@@ -1,3 +1,5 @@
+from gc import disable
+
 import flet as ft
 
 
@@ -25,6 +27,7 @@ class View(ft.UserControl):
         self._page.controls.append(self._title)
 
         self._ddStore = ft.Dropdown(label="Store")
+        self._controller.fill_dropdown()
         self._txtIntK = ft.TextField(label="Numero giorni massimo K")
         self._btnCreaGrafo = ft.ElevatedButton(text="Crea Grafo", on_click=self._controller.handleCreaGrafo)
         cont = ft.Container(self._ddStore, width=250, alignment=ft.alignment.top_left)
@@ -34,7 +37,8 @@ class View(ft.UserControl):
 
 
         self._btnCerca = ft.ElevatedButton(text="Cerca Percorso Massimo",
-                                           on_click=self._controller.handleCerca)
+                                           on_click=self._controller.handleCerca,
+                                           disabled= True)
 
         self._ddNode = ft.Dropdown(label="Node")
         cont2 = ft.Container(self._ddNode, width=250, alignment=ft.alignment.top_left)
